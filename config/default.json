@@ -1,0 +1,37 @@
+{
+  "discord": {
+    "intents": ["Guilds", "GuildMessages", "MessageContent"],
+    "fetchLimit": 100,
+    "maxMessagesPerChannel": null,
+    "excludeChannelTypes": [2, 4, 13, 15],
+    "excludeChannelNames": []
+  },
+  "scraper": {
+    "delayBetweenChannels": 1000,
+    "delayBetweenRequests": 100,
+    "retryAttempts": 3,
+    "retryDelay": 5000
+  },
+  "ai": {
+    "model": "claude-sonnet-4-20250514",
+    "maxTokens": 4096,
+    "batchSize": 50,
+    "stages": {
+      "filter": { "enabled": true },
+      "categorize": { "enabled": true },
+      "summarize": { "enabled": true },
+      "extract": { "enabled": true },
+      "format": { "enabled": true }
+    }
+  },
+  "database": {
+    "path": "./data/discord.db"
+  },
+  "export": {
+    "defaultFormat": "json",
+    "outputDir": "./exports"
+  },
+  "logging": {
+    "level": "info"
+  }
+}

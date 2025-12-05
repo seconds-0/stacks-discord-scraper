@@ -1,0 +1,50 @@
+{
+  "name": "stacks-discord-scraper",
+  "version": "1.0.0",
+  "description": "Discord scraper and AI content pipeline for Stacks Labs marketing",
+  "main": "src/cli/index.js",
+  "bin": {
+    "stacks-discord": "./src/cli/index.js"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "node src/cli/index.js",
+    "scrape": "node src/cli/index.js scrape",
+    "scrape:full": "node src/cli/index.js scrape --full",
+    "scrape:incremental": "node src/cli/index.js scrape --incremental",
+    "process": "node src/cli/index.js process",
+    "export": "node src/cli/index.js export",
+    "db:init": "node src/cli/index.js db init",
+    "db:stats": "node src/cli/index.js db stats",
+    "lint": "eslint src/ --fix",
+    "lint:check": "eslint src/",
+    "format": "prettier src/ --write",
+    "format:check": "prettier src/ --check"
+  },
+  "keywords": [
+    "discord",
+    "scraper",
+    "stacks",
+    "marketing",
+    "ai",
+    "content-pipeline"
+  ],
+  "author": "Stacks Labs",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "better-sqlite3": "^11.6.0",
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.7",
+    "ora": "^8.1.1"
+  },
+  "devDependencies": {
+    "eslint": "^9.15.0",
+    "prettier": "^3.4.2"
+  }
+}
