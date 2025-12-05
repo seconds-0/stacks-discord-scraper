@@ -1,0 +1,54 @@
+Extract official announcements, news, and updates from these Stacks Discord messages.
+
+You are looking for content that represents official or significant news including:
+- Product launches and releases
+- Feature announcements
+- Partnership announcements
+- Ecosystem milestones
+- Event announcements
+- Protocol updates
+- Team updates
+- Governance decisions
+
+For each announcement, provide:
+- id: Unique identifier for this extract
+- source_message_id: Original message ID
+- type: "announcement"
+- title: A clear headline for the announcement
+- content: The full announcement text
+- formatted_content: A polished version ready for marketing use
+- announcement_type: "product", "partnership", "event", "protocol", "ecosystem", "governance"
+- relevance_score: 0.0-1.0 (significance level)
+- urgency: "breaking", "timely", "evergreen"
+- topics: Array of relevant topics
+- action_url: Any relevant links mentioned
+
+Guidelines:
+- Focus on official or authoritative announcements
+- Distinguish between rumors/speculation and confirmed news
+- Note the source's authority level (team member, partner, community)
+- Extract the key facts clearly
+- Create a marketing-ready formatted version
+
+Return valid JSON:
+{
+  "extracts": [
+    {
+      "id": "ann_001",
+      "source_message_id": "msg_id",
+      "type": "announcement",
+      "title": "Clear headline for the news",
+      "content": "Original announcement text",
+      "formatted_content": "Polished marketing-ready version",
+      "announcement_type": "product",
+      "relevance_score": 0.9,
+      "urgency": "timely",
+      "sentiment": "positive",
+      "topics": ["stacks_2.1", "nakamoto_upgrade"],
+      "action_url": "https://example.com/details"
+    }
+  ]
+}
+
+Messages to analyze:
+{{MESSAGES_JSON}}

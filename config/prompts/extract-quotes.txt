@@ -1,0 +1,56 @@
+Extract compelling quotes and testimonials from these Stacks Discord messages.
+
+You are looking for content that can be used in marketing materials such as:
+- Website testimonials
+- Social media posts
+- Case studies
+- Press releases
+- Community highlights
+
+Look for:
+1. Positive experiences with Stacks technology
+2. Praise for specific features, products, or team members
+3. Success stories from developers or users
+4. Enthusiasm about the ecosystem or roadmap
+5. Comparisons favoring Stacks over alternatives
+6. Milestone celebrations or achievements
+
+For each valuable quote, provide:
+- id: Unique identifier for this extract
+- source_message_id: Original message ID
+- content: The exact quote (cleaned for readability, can be lightly edited for clarity)
+- context: What prompted this quote / surrounding context
+- author_type: "developer", "community_member", "partner", "team_member"
+- relevance_score: 0.0-1.0 (how valuable for marketing)
+- sentiment: "positive", "neutral", "mixed"
+- topics: Array of relevant topics
+- suggested_uses: Where this quote could be used
+- requires_permission: true if we should ask permission before using publicly
+
+Guidelines:
+- Only extract genuinely compelling quotes (not generic praise)
+- Preserve the authentic voice of the community member
+- Note if the quote needs context to make sense
+- Flag any quotes that might be controversial or need vetting
+
+Return valid JSON:
+{
+  "extracts": [
+    {
+      "id": "quote_001",
+      "source_message_id": "msg_id",
+      "type": "quote",
+      "content": "The exact quote text here",
+      "context": "What prompted this / why it matters",
+      "author_type": "developer",
+      "relevance_score": 0.85,
+      "sentiment": "positive",
+      "topics": ["developer_experience", "stacks_js"],
+      "suggested_uses": ["twitter", "testimonial_page"],
+      "requires_permission": true
+    }
+  ]
+}
+
+Messages to analyze:
+{{MESSAGES_JSON}}

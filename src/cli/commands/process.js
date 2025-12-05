@@ -22,6 +22,9 @@ processCommand
   .option('-l, --limit <n>', 'Limit number of messages to process', parseInt)
   .option('--force', 'Reprocess already-processed messages', false)
   .option('--dry-run', 'Preview what would be processed without calling AI', false)
+  .option('-d, --date <date>', 'Date for summarize stage (YYYY-MM-DD)')
+  .option('--weekly', 'Generate weekly summary instead of daily', false)
+  .option('--extract-type <type>', 'Extract type: quotes, announcements, faqs, or all', 'all')
   .action(async (options) => {
     const spinner = ora();
 
@@ -66,6 +69,11 @@ processCommand
             limit: options.limit,
             force: options.force,
             dryRun: options.dryRun,
+            // Summarize stage options
+            date: options.date,
+            weekly: options.weekly,
+            // Extract stage options
+            extractType: options.extractType,
           });
 
           allResults[stageName] = results;
@@ -93,6 +101,15 @@ processCommand
                 .map(([t, c]) => `${t}: ${c}`)
                 .join(', ');
               console.log(chalk.dim(`   Top topics: ${topTopics}`));
+            }
+            if (stageName === 'summarize' && results.summaries) {
+              console.log(chalk.dim(`   Summaries: ${results.summaries.length}, Skipped: ${results.skipped || 0}`));
+            }
+            if (stageName === 'extract' && results.extracts) {
+              const extractStats = Object.entries(results.extracts)
+                .map(([type, data]) => `${type}: ${data.extracted || 0}`)
+                .join(', ');
+              console.log(chalk.dim(`   Extracted: ${extractStats}`));
             }
 
             if (results.errors?.length > 0) {
@@ -179,6 +196,36 @@ processCommand
         console.log(chalk.dim(`\nFilter breakdown:`));
         console.log(chalk.dim(`  Kept: ${filterStats.kept || 0}`));
         console.log(chalk.dim(`  Discarded: ${filterStats.discarded || 0}`));
+      }
+
+      // Summary stats
+      const dailySummaries = db
+        .prepare(`SELECT COUNT(*) as count FROM ai_processing WHERE entity_type = 'daily_summary'`)
+        .get();
+      const weeklySummaries = db
+        .prepare(`SELECT COUNT(*) as count FROM ai_processing WHERE entity_type = 'weekly_summary'`)
+        .get();
+
+      if (dailySummaries.count > 0 || weeklySummaries.count > 0) {
+        console.log(chalk.dim(`\nSummaries:`));
+        console.log(chalk.dim(`  Daily: ${dailySummaries.count}`));
+        console.log(chalk.dim(`  Weekly: ${weeklySummaries.count}`));
+      }
+
+      // Marketing extracts
+      const extractStats = db
+        .prepare(`
+          SELECT extract_type, COUNT(*) as count
+          FROM marketing_extracts
+          GROUP BY extract_type
+        `)
+        .all();
+
+      if (extractStats.length > 0) {
+        console.log(chalk.dim(`\nMarketing Extracts:`));
+        for (const stat of extractStats) {
+          console.log(chalk.dim(`  ${stat.extract_type}: ${stat.count}`));
+        }
       }
 
       console.log('');

@@ -1,0 +1,46 @@
+Create a comprehensive weekly digest for the Stacks marketing team.
+
+Week: {{WEEK_START}} to {{WEEK_END}}
+Daily Summaries: {{SUMMARY_COUNT}}
+
+This digest should help the marketing team understand the week's most important developments
+and identify content opportunities.
+
+Guidelines:
+- Synthesize the daily summaries into a cohesive weekly narrative
+- Highlight the MOST important announcements or developments
+- Identify trends that emerged over the week
+- Note any recurring themes or community concerns
+- Call out the best content opportunities for marketing
+- Be concise but comprehensive - this is the main weekly briefing
+
+Provide:
+1. headline: One-sentence overview of the week
+2. key_points: 5-7 most important developments (prioritized)
+3. notable_messages: IDs of messages worth amplifying
+4. themes: Major themes that emerged this week
+5. sentiment_overview: How the community felt this week
+6. action_items: Recommended marketing actions
+
+Return valid JSON:
+{
+  "summary": {
+    "headline": "Week in review: [compelling summary]",
+    "key_points": [
+      "Most important development",
+      "Second most important",
+      "Third...",
+      "Continue for 5-7 items"
+    ],
+    "notable_messages": ["msg_id_1", "msg_id_2"],
+    "themes": ["theme1", "theme2", "theme3"],
+    "sentiment_overview": "Overall community sentiment and mood this week",
+    "action_items": [
+      "Specific marketing action to take",
+      "Another recommended action"
+    ]
+  }
+}
+
+Daily summaries to synthesize:
+{{SUMMARIES_JSON}}

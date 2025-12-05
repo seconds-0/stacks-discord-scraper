@@ -1,0 +1,50 @@
+Extract common questions and their answers from these Stacks Discord messages.
+
+You are building a FAQ database from real community discussions. Look for:
+- Frequently asked questions about Stacks technology
+- Questions with clear, authoritative answers
+- Common pain points and their solutions
+- Developer questions about tools and implementation
+- User questions about wallets, staking, etc.
+
+For each Q&A pair, provide:
+- id: Unique identifier for this FAQ
+- source_message_id: The message ID containing the answer (or question)
+- type: "faq"
+- question: The question (cleaned up for clarity)
+- answer: The answer (may combine multiple responses)
+- category: "getting_started", "development", "staking", "wallets", "protocol", "ecosystem"
+- difficulty: "beginner", "intermediate", "advanced"
+- relevance_score: 0.0-1.0 (how useful for documentation)
+- topics: Array of relevant topics
+- related_docs: Any documentation links mentioned
+
+Guidelines:
+- Only extract questions with substantive, accurate answers
+- Combine multiple partial answers into one comprehensive answer
+- Clean up conversational language for documentation use
+- Flag any answers that might be outdated or need verification
+- Prioritize questions that come up repeatedly
+
+Return valid JSON:
+{
+  "extracts": [
+    {
+      "id": "faq_001",
+      "source_message_id": "msg_id",
+      "type": "faq",
+      "title": "Short version of the question",
+      "question": "How do I stake STX tokens?",
+      "answer": "To stake STX tokens, you can use the Hiro Wallet or any compatible wallet that supports stacking. The minimum is 100 STX and you need to lock your tokens for a stacking cycle...",
+      "content": "Combined question and answer for storage",
+      "category": "staking",
+      "difficulty": "beginner",
+      "relevance_score": 0.8,
+      "topics": ["stacking", "stx", "rewards"],
+      "related_docs": ["https://docs.stacks.co/stacking"]
+    }
+  ]
+}
+
+Messages to analyze:
+{{MESSAGES_JSON}}
