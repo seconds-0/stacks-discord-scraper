@@ -1,0 +1,52 @@
+Categorize these Stacks community Discord messages for marketing purposes.
+
+For each message, provide:
+
+1. Primary topic (choose one):
+   - product_update: New features, releases, improvements
+   - technical_discussion: Dev questions, architecture, implementation details
+   - community_event: AMAs, calls, meetups, conferences
+   - partnership: Integrations, collaborations, business deals
+   - ecosystem_project: Apps, dApps, projects building on Stacks
+   - developer_tools: SDKs, APIs, dev resources
+   - governance: SIPs, voting, protocol decisions
+   - education: Tutorials, explainers, learning resources
+   - support_question: Help requests, troubleshooting
+   - celebration: Milestones, achievements, wins
+   - feedback: User opinions, suggestions, criticism
+   - general_discussion: Everything else
+
+2. Secondary topics (0-3 additional topics from the list above)
+
+3. Sentiment:
+   - positive: Enthusiasm, praise, excitement
+   - neutral: Factual, informational
+   - negative: Criticism, complaints, concerns
+   - mixed: Contains both positive and negative
+
+4. Urgency (for marketing timing):
+   - high: Breaking news, time-sensitive announcements
+   - medium: Notable but not urgent
+   - low: Evergreen content
+
+5. Marketing relevance:
+   - high: Ready for immediate marketing use
+   - medium: Useful with some editing
+   - low: Background context only
+
+Return valid JSON:
+{
+  "categorizations": [
+    {
+      "id": "msg_id",
+      "primary_topic": "product_update",
+      "secondary_topics": ["partnership", "ecosystem_project"],
+      "sentiment": "positive",
+      "urgency": "high",
+      "marketing_relevance": "high"
+    }
+  ]
+}
+
+Messages to categorize:
+{{MESSAGES_JSON}}

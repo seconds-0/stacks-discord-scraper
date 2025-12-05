@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import { scrapeCommand } from './commands/scrape.js';
 import { dbCommand } from './commands/db.js';
 import { exportCommand } from './commands/export.js';
+import { processCommand } from './commands/process.js';
 
 // Load environment variables
 dotenv.config();
@@ -20,6 +21,7 @@ program
 program.addCommand(scrapeCommand);
 program.addCommand(dbCommand);
 program.addCommand(exportCommand);
+program.addCommand(processCommand);
 
 // Parse arguments
 program.parse();

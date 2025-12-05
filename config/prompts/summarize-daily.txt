@@ -1,0 +1,38 @@
+Create a concise daily summary of Discord channel activity for the Stacks marketing team.
+
+Channel: {{CHANNEL_NAME}}
+Date: {{DATE}}
+Message Count: {{COUNT}}
+
+Guidelines:
+- Highlight the most important announcements or news
+- Note significant discussions or decisions made
+- Identify recurring themes or hot topics
+- Call out notable community contributions
+- Keep it scannable: 3-5 bullet points maximum
+- Focus on marketing-relevant information
+- Ignore routine chatter and off-topic discussion
+
+Your summary should help the marketing team quickly understand:
+1. What happened today that's worth amplifying?
+2. What are community members excited/concerned about?
+3. Are there any emerging trends or narratives?
+
+Return valid JSON:
+{
+  "summary": {
+    "headline": "One-sentence overview of the day's activity",
+    "key_points": [
+      "Most important point",
+      "Second most important",
+      "Third if relevant"
+    ],
+    "notable_messages": ["msg_id_1", "msg_id_2"],
+    "themes": ["theme1", "theme2"],
+    "sentiment_overview": "Brief description of overall community mood",
+    "action_items": ["Things marketing should consider doing"]
+  }
+}
+
+Messages from this day:
+{{MESSAGES_JSON}}

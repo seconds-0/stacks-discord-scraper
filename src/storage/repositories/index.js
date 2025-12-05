@@ -273,6 +273,184 @@ export function getLatestSyncState(db, guildId) {
 }
 
 // =============================================================================
+// AI PROCESSING
+// =============================================================================
+
+export function upsertAIProcessing(db, data) {
+  const stmt = db.prepare(`
+    INSERT INTO ai_processing (entity_type, entity_id, stage, result_json, model_used, tokens_in, tokens_out, processed_at)
+    VALUES (@entity_type, @entity_id, @stage, @result_json, @model_used, @tokens_in, @tokens_out, datetime('now'))
+    ON CONFLICT(entity_type, entity_id, stage) DO UPDATE SET
+      result_json = excluded.result_json,
+      model_used = excluded.model_used,
+      tokens_in = excluded.tokens_in,
+      tokens_out = excluded.tokens_out,
+      processed_at = datetime('now')
+  `);
+  return stmt.run(data);
+}
+
+export function getAIProcessing(db, entityType, entityId, stage) {
+  const row = db.prepare(`
+    SELECT * FROM ai_processing
+    WHERE entity_type = ? AND entity_id = ? AND stage = ?
+  `).get(entityType, entityId, stage);
+
+  if (row && row.result_json) {
+    try {
+      row.result = JSON.parse(row.result_json);
+    } catch {
+      row.result = null;
+    }
+  }
+  return row;
+}
+
+export function getAIProcessingByStage(db, stage, options = {}) {
+  const { limit, offset = 0 } = options;
+  let query = 'SELECT * FROM ai_processing WHERE stage = ? ORDER BY processed_at DESC';
+  const params = [stage];
+
+  if (limit) {
+    query += ' LIMIT ? OFFSET ?';
+    params.push(limit, offset);
+  }
+
+  return db.prepare(query).all(...params);
+}
+
+export function shouldProcess(db, entityType, entityId, stage, options = {}) {
+  const { force = false, reprocessAfterDays = 30 } = options;
+
+  if (force) return true;
+
+  const existing = getAIProcessing(db, entityType, entityId, stage);
+  if (!existing) return true;
+
+  // Optionally reprocess if older than N days
+  if (reprocessAfterDays) {
+    const age = Date.now() - new Date(existing.processed_at).getTime();
+    const maxAge = reprocessAfterDays * 24 * 60 * 60 * 1000;
+    return age > maxAge;
+  }
+
+  return false;
+}
+
+export function getUnprocessedMessages(db, stage, options = {}) {
+  const { channelId, limit, startDate, endDate } = options;
+
+  let query = `
+    SELECT m.* FROM messages m
+    LEFT JOIN ai_processing ap
+      ON ap.entity_type = 'message' AND ap.entity_id = m.id AND ap.stage = ?
+    WHERE ap.id IS NULL
+  `;
+  const params = [stage];
+
+  if (channelId) {
+    query += ' AND m.channel_id = ?';
+    params.push(channelId);
+  }
+
+  if (startDate) {
+    query += ' AND m.timestamp >= ?';
+    params.push(startDate);
+  }
+
+  if (endDate) {
+    query += ' AND m.timestamp < ?';
+    params.push(endDate);
+  }
+
+  query += ' ORDER BY m.timestamp';
+
+  if (limit) {
+    query += ' LIMIT ?';
+    params.push(limit);
+  }
+
+  return db.prepare(query).all(...params);
+}
+
+export function getProcessedMessages(db, stage, options = {}) {
+  const { keepOnly = false, limit } = options;
+
+  let query = `
+    SELECT m.*, ap.result_json FROM messages m
+    JOIN ai_processing ap
+      ON ap.entity_type = 'message' AND ap.entity_id = m.id AND ap.stage = ?
+  `;
+  const params = [stage];
+
+  if (keepOnly) {
+    query += ` AND json_extract(ap.result_json, '$.keep') = 1`;
+  }
+
+  query += ' ORDER BY m.timestamp';
+
+  if (limit) {
+    query += ' LIMIT ?';
+    params.push(limit);
+  }
+
+  return db.prepare(query).all(...params);
+}
+
+// =============================================================================
+// MARKETING EXTRACTS
+// =============================================================================
+
+export function upsertMarketingExtract(db, data) {
+  const stmt = db.prepare(`
+    INSERT INTO marketing_extracts (
+      source_type, source_id, extract_type, title, content, formatted_content,
+      relevance_score, sentiment, topics, requires_permission, permission_granted, created_at
+    )
+    VALUES (
+      @source_type, @source_id, @extract_type, @title, @content, @formatted_content,
+      @relevance_score, @sentiment, @topics, @requires_permission, @permission_granted, datetime('now')
+    )
+  `);
+  return stmt.run(data);
+}
+
+export function getMarketingExtracts(db, options = {}) {
+  const { extractType, minRelevance, requiresPermission, limit, offset = 0 } = options;
+
+  let query = 'SELECT * FROM marketing_extracts WHERE 1=1';
+  const params = [];
+
+  if (extractType) {
+    query += ' AND extract_type = ?';
+    params.push(extractType);
+  }
+
+  if (minRelevance !== undefined) {
+    query += ' AND relevance_score >= ?';
+    params.push(minRelevance);
+  }
+
+  if (requiresPermission !== undefined) {
+    query += ' AND requires_permission = ?';
+    params.push(requiresPermission ? 1 : 0);
+  }
+
+  query += ' ORDER BY relevance_score DESC, created_at DESC';
+
+  if (limit) {
+    query += ' LIMIT ? OFFSET ?';
+    params.push(limit, offset);
+  }
+
+  return db.prepare(query).all(...params);
+}
+
+export function getMarketingExtract(db, id) {
+  return db.prepare('SELECT * FROM marketing_extracts WHERE id = ?').get(id);
+}
+
+// =============================================================================
 // BULK EXPORT HELPERS
 // =============================================================================
 
@@ -354,6 +532,17 @@ export default {
   completeSyncState,
   failSyncState,
   getLatestSyncState,
+  // AI Processing
+  upsertAIProcessing,
+  getAIProcessing,
+  getAIProcessingByStage,
+  shouldProcess,
+  getUnprocessedMessages,
+  getProcessedMessages,
+  // Marketing Extracts
+  upsertMarketingExtract,
+  getMarketingExtracts,
+  getMarketingExtract,
   // Export helpers
   getAllMessages,
   getFullMessageData,
