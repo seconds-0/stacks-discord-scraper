@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  digestbot:
+    build: .
+    container_name: digestbot
+    restart: unless-stopped
+    environment:
+      - ENVIRONMENT=production
+      - DATABASE_PATH=/app/data/app.db
+      - LOG_LEVEL=INFO
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - digestbot-network
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "python", "-m", "digestbot", "health-check"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  redis:
+    image: redis:7-alpine
+    container_name: digestbot-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - digestbot-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  redis_data:
+
+networks:
+  digestbot-network:
+    driver: bridge
